@@ -9,6 +9,7 @@ from .helpers import (
     )
 
 from . import mgmt_view
+from .helpers import add_undo_info
 
 # TODO: rename, cut, copy, paste
 
@@ -40,5 +41,8 @@ def delete_folder_contents(context, request):
         if v is not None:
             del context[name]
             deleted += 1
-    request.session.flash('Deleted %s items' % deleted)
+    alert = 'Deleted %s items' % deleted
+    request.session.flash(alert)
+    add_undo_info(request, alert)
     return HTTPFound(request.mgmt_path(context, '@@contents'))
+

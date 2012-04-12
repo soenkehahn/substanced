@@ -1,6 +1,10 @@
+import base64
 import math
 import operator
+import transaction
 import urlparse
+
+from pyramid_zodbconn import get_connection
 
 from zope.interface.interfaces import IInterface
 
@@ -11,6 +15,7 @@ from pyramid.location import lineage
 from pyramid.traversal import find_interface
 from pyramid.security import has_permission
 
+from ..util import oid_of
 from ..interfaces import ISite
 
 MANAGE_ROUTE_NAME = 'substanced_manage'
@@ -182,3 +187,23 @@ def check_csrf_token(request):
     if request.POST['csrf_token'] != request.session.get_csrf_token():
         raise HTTPBadRequest('incorrect CSRF token')
 
+def add_undo_info(request, label):
+    transaction.setUser(oid_of(request.user))
+    transaction.note(label)
+    conn = get_connection(request)
+    db = conn.db()
+    if db.supportsUndo():
+        undo = request.session.setdefault('sdi.my_undo', [])
+        undo.append(label)
+        request.session['sdi.my_undo'] = undo
+    
+def get_undo_info(request):
+    conn = get_connection(request)
+    db = conn.db()
+    if db.supportsUndo():
+        my_txns = request.session.get('sdi.my_undo', [])
+        if my_txns:
+            last = my_txns[-1]
+            return {'id':last[0], 'label':last[1]}
+    return None
+    
