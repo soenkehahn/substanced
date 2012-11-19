@@ -88,11 +88,11 @@
                 tal:condition="tabs">
               <li tal:repeat="tab_data tabs"
                   tal:attributes="class tab_data['class']">
-                  <a href="${tab_data['url']}">${tab_data['title']}</a>
+                  <a href="${tab_data['url']}" class="js-pjax">${tab_data['title']}</a>
               </li>
             </ul>
 
-            <div class="above-content">
+            <div id="above-content">
             </div>
 
             <div id="messages" class="${request.is_xhr and 'ajax-replace' or ''}">
@@ -106,12 +106,12 @@
               </div>
             </div>
 
-            <div class="inner-content">
+            <div id="inner-content">
               <div metal:define-slot="main">
               </div>
             </div>
 
-            <div class="below-content" >
+            <div id="below-content" >
             </div>
 
           </div>
@@ -119,6 +119,9 @@
         </div>
 
     </div>
+
+    <script src="${request.static_url('substanced.sdi:static/js/jquery.pjax.js')}" type="text/javascript"></script>
+    <script src="${request.static_url('substanced.sdi:static/js/sdi.js')}" type="text/javascript"></script>
 
     <more tal:omit-tag="" metal:define-slot="tail-more"></more>
 

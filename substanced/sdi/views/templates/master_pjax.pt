@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:define-macro="main"
+    >
+  <head>
+    <meta charset="utf-8" />
+    <title metal:define-slot="page-title">${view.title | sdi_h.get_sdi_title(request)}</title>
+  </head>
+  <body>
+    <div id="inner-content">
+      <more tal:omit-tag="" metal:define-slot="head-more"></more>
+      <div metal:define-slot="main">
+      </div>
+      <more tal:omit-tag="" metal:define-slot="tail-more"></more>
+    </div>
+  </body>
+</html>
+

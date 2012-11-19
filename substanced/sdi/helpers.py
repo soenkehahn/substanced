@@ -39,3 +39,6 @@ def get_sdi_title(request):
 def add_renderer_globals(event):
    event['sdi_h'] = sys.modules[__name__]
 
+def time():
+    import time
+    return time.time()

@@ -1,4 +1,4 @@
-<div metal:use-macro="sdi_h.macros()['master']">
+<div metal:use-macro="request.sdi_main_template">
 
   <div tal:omit-tag="" metal:fill-slot="head-more">
     <link href="${request.static_url('substanced.sdi:static/datatables/css/jquery.dataTables.css')}" rel="stylesheet" />

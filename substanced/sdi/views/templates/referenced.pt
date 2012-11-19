@@ -1,4 +1,4 @@
-<div metal:use-macro="sdi_h.macros()['master']">
+<div metal:use-macro="request.sdi_main_template">
 
   <div metal:fill-slot="main"
        tal:define="root_url request.mgmt_url(request.root)">

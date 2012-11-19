@@ -11,6 +11,7 @@ import venusian
 from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.exceptions import ConfigurationError
+from pyramid.renderers import get_renderer
 from pyramid.registry import (
     predvalseq,
     Deferred,
@@ -725,6 +726,15 @@ class FlashUndo(object):
             msg = button
         request.session.flash(msg, queue, allow_duplicate=allow_duplicate)
 
+def sdi_main_template(request):
+    if 'X-PJAX' in request.headers or 'PJAX' in request.GET:
+        macro = get_renderer(
+            'substanced.sdi.views:templates/master_pjax.pt').implementation()
+    else:
+        macro = get_renderer(
+            'substanced.sdi.views:templates/master.pt').implementation()
+    return macro
+
 def includeme(config): # pragma: no cover
     settings = config.registry.settings
     YEAR = 86400 * 365
@@ -742,6 +752,7 @@ def includeme(config): # pragma: no cover
     config.add_request_method(mgmt_url)
     config.add_request_method(get_user, name='user', reify=True)
     config.add_request_method(FlashUndo, name='flash_with_undo', reify=True)
+    config.add_request_method(sdi_main_template, property=True)
     config.include('deform_bootstrap')
     secret = settings.get('substanced.secret')
     if secret is None:
