@@ -95,20 +95,13 @@
             <div id="above-content">
             </div>
 
-            <div id="messages" class="${request.is_xhr and 'ajax-replace' or ''}">
-              <div tal:repeat="queue ('info', 'success', 'error', '')" tal:omit-tag="">
-                <div class="alert alert-${queue}"
-                   tal:define="messages request.session.pop_flash(queue)"
-                   tal:condition="messages"
-                   tal:repeat="message messages">
-                  ${structure:message}
-                </div>
-              </div>
-            </div>
-
             <div id="inner-content">
+
+              <div metal:use-macro="request.sdi_macros['messages']"/>
+
               <div metal:define-slot="main">
               </div>
+
             </div>
 
             <div id="below-content" >

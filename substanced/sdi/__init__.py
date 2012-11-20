@@ -735,6 +735,15 @@ def sdi_main_template(request):
             'substanced.sdi.views:templates/master.pt').implementation()
     return macro
 
+class sdi_macros(object):
+    def __init__(self, request):
+        self.request = request
+        self.template = get_renderer(
+            'substanced.sdi.views:templates/macros.pt').implementation()
+
+    def __getitem__(self, name):
+        return self.template.macros[name]
+
 def includeme(config): # pragma: no cover
     settings = config.registry.settings
     YEAR = 86400 * 365
@@ -753,6 +762,7 @@ def includeme(config): # pragma: no cover
     config.add_request_method(get_user, name='user', reify=True)
     config.add_request_method(FlashUndo, name='flash_with_undo', reify=True)
     config.add_request_method(sdi_main_template, property=True)
+    config.add_request_method(sdi_macros, property=True)
     config.include('deform_bootstrap')
     secret = settings.get('substanced.secret')
     if secret is None:

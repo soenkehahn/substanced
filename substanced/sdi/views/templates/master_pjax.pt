@@ -3,6 +3,7 @@
 </head>
 <div metal:define-macro="main">
   <headmore tal:omit-tag="" metal:define-slot="head-more"></headmore>
+  <div metal:use-macro="request.sdi_macros['messages']"/>
   <main tal:omit-tag="" metal:define-slot="main"></main>
   <tailmore tal:omit-tag="" metal:define-slot="tail-more"></tailmore>
 </div>
