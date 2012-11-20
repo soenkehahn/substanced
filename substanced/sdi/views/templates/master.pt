@@ -87,7 +87,7 @@
                 tal:define="tabs sdi_h.sdi_mgmt_views(context, request)"
                 tal:condition="tabs">
               <li tal:repeat="tab_data tabs"
-                  tal:attributes="class tab_data['class']">
+                  tal:attributes="class (tab_data['class'] and tab_data['class'] + ' tabtarget') or 'tabtarget'">
                   <a href="${tab_data['url']}" class="js-pjax">${tab_data['title']}</a>
               </li>
             </ul>

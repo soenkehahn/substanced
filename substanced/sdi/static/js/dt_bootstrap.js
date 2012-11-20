@@ -143,27 +143,3 @@ if ( $.fn.DataTable.TableTools ) {
 		}
 	} );
 }
-
-
-/* Table initialisation */
-$(document).ready(function() {
-	$('#sdi-contents-table').dataTable( {
-		"sDom": "<'row'<'selectall span2'><'pull-right'f>r>t<'row'<'span6'i><'span6'p>>",
-		"sPaginationType": "bootstrap",
-	        "iDisplayLength": 20,
-	        "aLengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
-	        "bPaginate": pagination_enabled,
-		"oLanguage": {
-			"sLengthMenu": "_MENU_ records per page",
-	                "sSearch": "Filter:"
-		},
-                "aoColumnDefs": [
-		        { "sWidth": "25px", "aTargets": [0] },
-		        { "bSortable": false, "aTargets": non_sortable_cols },
-		        { "bSearchable": false, "aTargets": non_filterable_cols }
-	        ]	
-	} );
-	if (at_least_one) {
-	    $('div.selectall').html('&nbsp;<input type="checkbox" onclick="toggleChecked(this.checked)"/> Select all');
-	}
-} );
