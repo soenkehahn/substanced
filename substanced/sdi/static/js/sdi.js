@@ -3,7 +3,7 @@ $(document).ready(function () {
     var pjax_sel = '#inner-content';
     $(document).pjax(
         '.js-pjax',
-        {fragment:pjax_sel, container:pjax_sel}
+        {fragment:pjax_sel, container:pjax_sel, timeout:0}
     )
         .on('pjax:beforeSend', function () {
             console.log('starting PJAX');
