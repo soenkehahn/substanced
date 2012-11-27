@@ -31,6 +31,7 @@ from ..schema import (
     Schema,
     PermissionsSchemaNode,
     )
+from ..util import dotted_name_resolver
 
 from .discriminators import (
     AllowedDiscriminator,
@@ -39,7 +40,12 @@ from .discriminators import (
 
 PATH_WITH_OPTIONS = re.compile(r'\[(.+?)\](.+?)$')
 
+dummy_discrim_dotted = 'substanced.catalog.discriminators.dummy_discriminator'
+
 class ResolvingIndex(object):
+
+    _v_discriminator = None
+
     def resultset_from_query(self, query, names=None, resolver=None):
         if resolver is None:
             objectmap = find_objectmap(self)
@@ -47,6 +53,25 @@ class ResolvingIndex(object):
         docids = query._apply(names)
         numdocs = len(docids)
         return hypatia.util.ResultSet(docids, numdocs, resolver)
+
+    def _get_discriminator(self):
+        discriminator = self._v_discriminator
+        if discriminator is None:
+            dotted = self._discriminator_dotted_name
+            if dotted is None:
+                dotted = dummy_discrim_dotted
+            discriminator = dotted_name_resolver.resolve(dotted)
+            self._v_discriminator = discriminator
+        return discriminator
+
+    def _set_discriminator(self, val):
+        self._discriminator_dotted_name = val
+
+    def _del_discriminator(self):
+        self._v_disciminator = None
+        self._discriminator_dotted_name = None
+
+    discriminator = (_get_discriminator, _set_discriminator, _del_discriminator)
 
 class IndexSchema(Schema):
     sd_category = colander.SchemaNode(
@@ -209,7 +234,7 @@ class PathIndex(ResolvingIndex, hypatia.util.BaseIndexMixin, Persistent):
 class FieldIndex(ResolvingIndex, hypatia.field.FieldIndex):
     def __init__(self, discriminator=None, family=None):
         if discriminator is None:
-            discriminator = dummy_discriminator
+            discriminator = dummy_discrim_dotted
         hypatia.field.FieldIndex.__init__(self, discriminator, family=family)
 
 @content(
@@ -224,7 +249,7 @@ class FieldIndex(ResolvingIndex, hypatia.field.FieldIndex):
 class KeywordIndex(ResolvingIndex, hypatia.keyword.KeywordIndex):
     def __init__(self, discriminator=None, family=None):
         if discriminator is None:
-            discriminator = dummy_discriminator
+            discriminator = dummy_discrim_dotted
         hypatia.keyword.KeywordIndex.__init__(
             self, discriminator, family=family)
 
@@ -246,7 +271,7 @@ class TextIndex(ResolvingIndex, hypatia.text.TextIndex):
         family=None
         ):
         if discriminator is None:
-            discriminator = dummy_discriminator
+            discriminator = dummy_discrim_dotted
         hypatia.text.TextIndex.__init__(
             self, discriminator, lexicon=lexicon, index=index, family=family,
             )
@@ -294,7 +319,7 @@ class FacetIndexPropertySheet(PropertySheet):
 class FacetIndex(ResolvingIndex, hypatia.facet.FacetIndex):
     def __init__(self, discriminator=None, facets=None, family=None):
         if discriminator is None:
-            discriminator = dummy_discriminator
+            discriminator = dummy_discrim_dotted
         if facets is None:
             facets = []
         hypatia.facet.FacetIndex.__init__(

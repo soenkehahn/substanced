@@ -5,6 +5,7 @@ import urlparse
 
 from pyramid.location import lineage
 from pyramid.threadlocal import get_current_registry
+from pyramid.util import DottedNameResolver
 
 from ..event import ACLModified
 from ..interfaces import IFolder
@@ -381,3 +382,4 @@ def dotted_name(g):
     module = g.__module__
     return '.'.join((module, name))
 
+dotted_name_resolver = DottedNameResolver()

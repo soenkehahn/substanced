@@ -13,10 +13,7 @@ from pyramid.request import Request
 from pyramid.security import AllPermissionsList, ALL_PERMISSIONS
 from pyramid.threadlocal import get_current_registry
 from pyramid.traversal import resource_path
-from pyramid.util import (
-    DottedNameResolver,
-    TopologicalSorter,
-    )
+from pyramid.util import TopologicalSorter
 
 from substanced.interfaces import IFolder
 from substanced.workflow import STATE_ATTR
@@ -30,14 +27,13 @@ from substanced.util import (
     set_oid,
     get_acl,
     dotted_name,
+    dotted_name_resolver,
     )
 
 logger = logging.getLogger(__name__)
 
 RESOURCE_FILENAME = 'resource.yaml'
 RESOURCES_DIRNAME = 'resources'
-
-dotted_name_resolver = DottedNameResolver()
 
 class IDumperFactories(Interface):
     pass
