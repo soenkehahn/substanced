@@ -8,6 +8,8 @@ import types
 from zope.interface import providedBy
 from zope.interface.declarations import Declaration
 
+from ZODB.interfaces import IBroken
+
 from pyramid.location import lineage
 from pyramid.threadlocal import get_current_registry
 
@@ -43,13 +45,24 @@ def get_oid(resource, default=_marker):
     """ Return the object identifer of ``resource``.  If ``resource`` has no
     object identifier, raise an AttributeError exception unless ``default`` was
     passed a value; if ``default`` was passed a value, return the default in
-    that case."""
+    that case.
+
+    Note that this function special cases resources which provide the
+    ``ZODB.interfaces.IBroken`` interface: it pulls the __oid__ out of the
+    ``__Broken_newargs__`` dictionary of such objects.
+    """
+    oid = None
     try:
-        return resource.__oid__
+        oid = resource.__oid__
     except AttributeError:
+        if IBroken.providedBy(resource):
+            oid = resource.__Broken_newargs__.get('__oid__')
+    if oid is None:
         if default is _marker:
             raise
         return default
+    else:
+        return oid
 
 oid_of = get_oid
 

@@ -67,6 +67,24 @@ class Test_get_oid(unittest.TestCase):
         obj = testing.DummyResource()
         self.assertEqual(self._callFUT(obj, 1), 1)
 
+    def test_IBroken_no_oid(self):
+        from ZODB.interfaces import IBroken
+        from zope.interface import implementer
+        @implementer(IBroken)
+        class BrokenResource(object):
+            __Broken_newargs__ = {}
+        obj = BrokenResource()
+        self.assertRaises(AttributeError, self._callFUT, obj)
+        
+    def test_IBroken_with_oid(self):
+        from ZODB.interfaces import IBroken
+        from zope.interface import implementer
+        @implementer(IBroken)
+        class BrokenResource(object):
+            __Broken_newargs__ = {'__oid__':1}
+        obj = BrokenResource()
+        self.assertEqual(self._callFUT(obj, 1), 1)
+
 class Test_set_oid(unittest.TestCase):
     def _callFUT(self, obj, val):
         from . import set_oid

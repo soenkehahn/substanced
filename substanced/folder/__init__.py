@@ -593,10 +593,18 @@ class Folder(Persistent):
                 self._notify(event, registry)
 
             if hasattr(other, '__parent__'):
-                del other.__parent__
+                try:
+                    del other.__parent__
+                except AttributeError: # pragma: no cover
+                    # object might be an IBroken object
+                    pass
 
             if hasattr(other, '__name__'):
-                del other.__name__
+                try:
+                    del other.__name__
+                except AttributeError: # pragma: no cover
+                    # object might be an IBroken object
+                    pass
 
             del self.data[name]
             self._num_objects.change(-1)
