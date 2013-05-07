@@ -72,7 +72,8 @@ class Test_get_oid(unittest.TestCase):
         from zope.interface import implementer
         @implementer(IBroken)
         class BrokenResource(object):
-            __Broken_newargs__ = {}
+            def __getstate__(self):
+                return {}
         obj = BrokenResource()
         self.assertRaises(AttributeError, self._callFUT, obj)
         
@@ -81,10 +82,64 @@ class Test_get_oid(unittest.TestCase):
         from zope.interface import implementer
         @implementer(IBroken)
         class BrokenResource(object):
-            __Broken_newargs__ = {'__oid__':1}
+            def __getstate__(self):
+                return {'__oid__':1}
         obj = BrokenResource()
         self.assertEqual(self._callFUT(obj, 1), 1)
 
+class Test_get_name(unittest.TestCase):
+    def _callFUT(self, obj, default=_marker):
+        from . import get_name
+        return get_name(obj, default)
+
+    def test_gardenpath(self):
+        obj = testing.DummyResource()
+        obj.__name__ = 'fred'
+        self.assertEqual(self._callFUT(obj), 'fred')
+
+    def test_no_name_no_default(self):
+        class DummyResource(object):
+            pass
+        obj = DummyResource()
+        self.assertRaises(AttributeError, self._callFUT, obj)
+
+    def test_no_name_with_default(self):
+        class DummyResource(object):
+            pass
+        obj = DummyResource()
+        self.assertEqual(self._callFUT(obj, 'foo'), 'foo')
+
+    def test_IBroken_no_oid(self):
+        from ZODB.interfaces import IBroken
+        from zope.interface import implementer
+        @implementer(IBroken)
+        class BrokenResource(object):
+            def __getstate__(self):
+                return {}
+        obj = BrokenResource()
+        self.assertRaises(AttributeError, self._callFUT, obj)
+        
+    def test_IBroken_with_oid(self):
+        from ZODB.interfaces import IBroken
+        from zope.interface import implementer
+        @implementer(IBroken)
+        class BrokenResource(object):
+            def __getstate__(self):
+                return {'__name__':'foo'}
+        obj = BrokenResource()
+        self.assertEqual(self._callFUT(obj), 'foo')
+
+    def test_IBroken_with___name__(self):
+        from ZODB.interfaces import IBroken
+        from zope.interface import implementer
+        @implementer(IBroken)
+        class BrokenResource(object):
+            __name__ = 'fred'
+            def __getstate__(self):
+                return {'__name__':'foo'}
+        obj = BrokenResource()
+        self.assertEqual(self._callFUT(obj), 'foo')
+        
 class Test_set_oid(unittest.TestCase):
     def _callFUT(self, obj, val):
         from . import set_oid

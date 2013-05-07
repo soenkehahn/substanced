@@ -49,6 +49,7 @@ from ..objectmap import find_objectmap
 from ..util import (
     acquire,
     find_index,
+    get_name,
     )
 
 MANAGE_ROUTE_NAME = 'substanced_manage'
@@ -362,7 +363,7 @@ def name_sorter(resource, resultset, limit=None, reverse=False):
 
 def default_sdi_columns(folder, subobject, request):
     """ The default columns content-type hook """
-    name = getattr(subobject, '__name__', '')
+    name = get_name(subobject, '')
     return [
         {'name': 'Name',
          'value': name,
@@ -577,7 +578,7 @@ class sdiapi(object):
             if not has_permission('sdi.view', resource, request):
                 return []
             url = request.sdiapi.mgmt_path(resource, '@@manage_main')
-            name = resource.__name__ or 'Home'
+            name = get_name(resource, '') or 'Home'
             icon = request.registry.content.metadata(resource, 'icon')
             active = resource is request.context and 'active' or None
             breadcrumbs.append({'url':url, 'name':name, 'active':active,

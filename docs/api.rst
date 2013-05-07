@@ -449,6 +449,8 @@ Other Helpers
 
 .. autofunction:: set_created
 
+.. autofunction:: get_name
+
 .. autofunction:: get_interfaces
 
 .. autofunction:: get_content_type

@@ -42,28 +42,54 @@ def postorder(startnode):
     return visit(startnode)
 
 def get_oid(resource, default=_marker):
-    """ Return the object identifer of ``resource``.  If ``resource`` has no
-    object identifier, raise an AttributeError exception unless ``default`` was
-    passed a value; if ``default`` was passed a value, return the default in
-    that case.
+    """ Return the object identifer (the ``__oid__`` attribute) of
+    ``resource``.  If ``resource`` has no object identifier, raise an
+    AttributeError exception unless ``default`` was passed a value; if
+    ``default`` was passed a value, return the default in that case.
 
     Note that this function special cases resources which provide the
-    ``ZODB.interfaces.IBroken`` interface: it pulls the __oid__ out of the
-    ``__Broken_newargs__`` dictionary of such objects.
+    ``ZODB.interfaces.IBroken`` interface: it pulls the ``__oid__`` attribute
+    out of the dictionary returned by the ``__getstate__()`` method of such
+    objects.
     """
-    oid = None
+    oid = _marker
     try:
-        oid = resource.__oid__
+        return resource.__oid__
     except AttributeError:
         if IBroken.providedBy(resource):
-            oid = resource.__Broken_newargs__.get('__oid__')
-    if oid is None:
-        if default is _marker:
-            raise
-        return default
-    else:
+            oid = resource.__getstate__().get('__oid__', _marker)
+        if oid is _marker:
+            if default is _marker:
+                raise
+            return default
         return oid
 
+def get_name(resource, default=_marker):
+    """ Return the object name (the ``__name__`` attribute) of ``resource``.
+    If ``resource`` has no ``__name__`` attribute, raise an AttributeError
+    exception unless ``default`` was passed a value; if ``default`` was passed
+    a value, return the default in that case.
+
+    Note that this function special cases resources which provide the
+    ``ZODB.interfaces.IBroken`` interface: it pulls the ``__name__`` out of the
+    dictionary returned by the ``__getstate__()`` method of such objects
+    instead of using the ``__name__`` of the resource itself.
+    """
+    if IBroken.providedBy(resource):
+        name = resource.__getstate__().get('__name__', _marker)
+    else:
+        name = getattr(resource, '__name__', _marker)
+    if name is _marker:
+        if default is _marker:
+            raise AttributeError('__name__')
+        return default
+    return name
+
+def is_broken(resource):
+    """ Return true if the resource is a 'broken' ZODB object (implements
+    ``ZODB.interfaces.IBroken``)."""
+    return IBroken.providedBy(resource)
+    
 oid_of = get_oid
 
 def set_oid(resource, oid):

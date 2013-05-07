@@ -15,6 +15,8 @@ from ...schema import Schema
 from ...util import (
     JsonDict,
     get_oid,
+    get_name,
+    is_broken,
     find_catalog,
     )
 
@@ -522,7 +524,7 @@ class FolderContentsViews(object):
 
         for oid in itertools.islice(ids, start, end):
             resource = objectmap.object_for(oid)
-            name = getattr(resource, '__name__', '')
+            name = get_name(resource, '')
             # XXX CM: computation of deletable here should probably attached to
             # the delete button as an ``enabled_for`` instead of being treated
             # specially.
@@ -533,7 +535,10 @@ class FolderContentsViews(object):
             if deletable is None:
                 deletable = can_manage
             deletable = bool(deletable) # cast return/attr value to bool
-            icon = request.registry.content.metadata(resource, 'icon')
+            if is_broken(resource):
+                icon = 'icon-ban-circle'
+            else:
+                icon = request.registry.content.metadata(resource, 'icon')
             if callable(icon):
                 icon = icon(resource, request)
             url = request.sdiapi.mgmt_path(resource, '@@manage_main')
